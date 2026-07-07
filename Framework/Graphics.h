@@ -1,26 +1,51 @@
 #pragma once
-#include <windows.h>
-#include <wrl/client.h> // Required for Microsoft::WRL::ComPtr
 #include <d3d11.h>
+#include <d3dcompiler.h>
+#include <wrl/client.h>
+#include <memory>
+#include "ScreenBuffer.h"
+
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "d3dcompiler.lib")
 
 class Graphics
 {
 public:
     Graphics(HWND hWnd, int width, int height);
-    ~Graphics() = default; // ComPtr cleans up automatically
+    ~Graphics() = default; // ComPtr automatically handles resource cleanup (RAII)
 
-    // Prevent copying
+    // Disallow copying to prevent resource duplication issues
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
 
-    // Clear buffer and swap screen
-    void BeginFrame(float r, float g, float b) noexcept;
-    void EndFrame() noexcept;
+    void BeginFrame(float r, float g, float b);
+    void EndFrame();
+
+    // Present the software screen buffer to the GPU texture and render it
+    void PresentBuffer(const ScreenBuffer& buffer);
 
 private:
-    // Smart pointers for DirectX 11 interfaces
-    Microsoft::WRL::ComPtr<ID3D11Device>            m_device;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext>     m_context;
-    Microsoft::WRL::ComPtr<IDXGISwapChain>          m_swap;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_target;
+    // Helper function to compile and initialize shaders and input layout
+    bool InitializeShaders();
+
+    // Helper function to create the full-screen quad vertex buffer
+    bool InitializeQuad();
+
+private:
+    // Core DirectX 11 Interfaces wrapped in ComPtr
+    Microsoft::WRL::ComPtr<ID3D11Device>           m_device;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_context;
+    Microsoft::WRL::ComPtr<IDXGISwapChain>         m_swapChain;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
+
+    // Software Rendering Pipeline Resources wrapped in ComPtr
+    Microsoft::WRL::ComPtr<ID3D11VertexShader>     m_vertexShader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>      m_pixelShader;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>      m_inputLayout;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>           m_vertexBuffer;
+
+    // Texture resources to hold the CPU pixel data
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_dynamicTexture;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureSRV;
+    Microsoft::WRL::ComPtr<ID3D11SamplerState>     m_samplerState;
 };
