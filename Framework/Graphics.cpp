@@ -8,7 +8,8 @@ struct Vertex
     float u, v;       // Texture coordinates (UV)
 };
 
-Graphics::Graphics(HWND hWnd, int width, int height)
+Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderPath)
+    : m_shaderPath(shaderPath)
 {
     // =========================================================================
     // 1. Core DX11 Initialization (Device, Context, SwapChain, RTV)
@@ -121,7 +122,7 @@ bool Graphics::InitializeShaders()
 
     // Compile Vertex Shader from file at runtime
     HRESULT hr = D3DCompileFromFile(
-        L"BufferShaders.hlsl", nullptr, nullptr,
+        m_shaderPath.c_str(), nullptr, nullptr,
         "VS_Main", "vs_5_0", 0, 0, vsBlob.GetAddressOf(), errorBlob.GetAddressOf()
     );
     if (FAILED(hr))
@@ -131,7 +132,7 @@ bool Graphics::InitializeShaders()
 
     // Compile Pixel Shader from file at runtime
     hr = D3DCompileFromFile(
-        L"BufferShaders.hlsl", nullptr, nullptr,
+        m_shaderPath.c_str(), nullptr, nullptr,
         "PS_Main", "ps_5_0", 0, 0, psBlob.GetAddressOf(), errorBlob.GetAddressOf()
     );
     if (FAILED(hr))

@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 #include <wrl/client.h>
 #include <memory>
+#include <string>
 #include "ScreenBuffer.h"
 
 #pragma comment(lib, "d3d11.lib")
@@ -11,7 +12,7 @@
 class Graphics
 {
 public:
-    Graphics(HWND hWnd, int width, int height);
+    Graphics(HWND hWnd, int width, int height, const std::wstring& shaderPath); // Pass the shader file path during initialization
     ~Graphics() = default; // ComPtr automatically handles resource cleanup (RAII)
 
     // Disallow copying to prevent resource duplication issues
@@ -30,6 +31,9 @@ private:
 
     // Helper function to create the full-screen quad vertex buffer
     bool InitializeQuad();
+
+private:
+    std::wstring m_shaderPath;
 
 private:
     // Core DirectX 11 Interfaces wrapped in ComPtr

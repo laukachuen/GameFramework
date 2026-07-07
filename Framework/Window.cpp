@@ -1,6 +1,6 @@
 #include "Window.h"
 
-Window::Window(int width, int height, const std::wstring& title)
+Window::Window(int width, int height, const std::wstring& title, const std::wstring& shaderPath)
     : m_width(width), m_height(height), m_hInstance(GetModuleHandle(nullptr))
 {
     // 1. Register Window Class inside Windows OS
@@ -47,7 +47,7 @@ Window::Window(int width, int height, const std::wstring& title)
     ShowWindow(m_hWnd, SW_SHOWDEFAULT);
 
     // Initialize Graphics using std::make_unique
-    m_pGfx = std::make_unique<Graphics>(m_hWnd, m_width, m_height);
+    m_pGfx = std::make_unique<Graphics>(m_hWnd, m_width, m_height, shaderPath);
 }
 
 Window::~Window()

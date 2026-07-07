@@ -1,7 +1,7 @@
 #include "App.h"
 
 App::App()
-    : m_wnd(800, 600, L"My Custom Game Framework")
+    : m_wnd(800, 600, L"My Custom Game Framework", L"../Framework/Shader/BufferShaders.hlsl")
 {
     // Instantiate the software screen buffer matching the exact window resolution
     m_screenBuffer = std::make_unique<ScreenBuffer>(800, 600);
