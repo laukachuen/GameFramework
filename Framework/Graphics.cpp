@@ -33,18 +33,18 @@ Graphics::Graphics(HWND hWnd, int width, int height)
         0,
         D3D11_SDK_VERSION,        // Standard SDK version
         &sd,
-        &m_pSwap,
-        &m_pDevice,
+        &m_swap,
+        &m_device,
         nullptr,
-        &m_pContext
+        &m_context
     );
 
     // Get the back buffer texture from the swap chain
     Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackBuffer;
-    m_pSwap->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer);
+    m_swap->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer);
 
     // Create the Render Target View using the back buffer
-    m_pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &m_pTarget);
+    m_device->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &m_target);
 
     // Set viewport bounds to match the window dimensions
     D3D11_VIEWPORT vp;
@@ -54,19 +54,19 @@ Graphics::Graphics(HWND hWnd, int width, int height)
     vp.MaxDepth = 1.0f;
     vp.TopLeftX = 0.0f;
     vp.TopLeftY = 0.0f;
-    m_pContext->RSSetViewports(1u, &vp);
+    m_context->RSSetViewports(1u, &vp);
 }
 
 void Graphics::BeginFrame(float r, float g, float b) noexcept
 {
     // Clear the screen with a specific background color
     const float color[] = { r, g, b, 1.0f };
-    m_pContext->ClearRenderTargetView(m_pTarget.Get(), color);
+    m_context->ClearRenderTargetView(m_target.Get(), color);
 }
 
 void Graphics::EndFrame() noexcept
 {
     // Present the back buffer to the monitor screen
     // First parameter 1 = Enable VSync (caps frame rate to screen refresh rate)
-    m_pSwap->Present(1u, 0u);
+    m_swap->Present(1u, 0u);
 }

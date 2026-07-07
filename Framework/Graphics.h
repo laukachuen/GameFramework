@@ -19,8 +19,8 @@ public:
 
 private:
     // Smart pointers for DirectX 11 interfaces
-    Microsoft::WRL::ComPtr<ID3D11Device>            m_pDevice;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext>     m_pContext;
-    Microsoft::WRL::ComPtr<IDXGISwapChain>          m_pSwap;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_pTarget;
+    Microsoft::WRL::ComPtr<ID3D11Device>            m_device;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext>     m_context;
+    Microsoft::WRL::ComPtr<IDXGISwapChain>          m_swap;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_target;
 };

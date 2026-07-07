@@ -8,30 +8,30 @@ void Mouse::OnMouseMove(int x, int y) noexcept
 
 void Mouse::OnMouseLeave() noexcept
 {
-    m_bIsInWindow = false;
+    m_isInWindow = false;
 }
 
 void Mouse::OnMouseEnter() noexcept
 {
-    m_bIsInWindow = true;
+    m_isInWindow = true;
 }
 
 void Mouse::OnLeftPressed() noexcept
 {
-    m_bIsLeftPressed = true;
+    m_isLeftPressed = true;
 }
 
 void Mouse::OnLeftReleased() noexcept
 {
-    m_bIsLeftPressed = false;
+    m_isLeftPressed = false;
 }
 
 void Mouse::OnRightPressed() noexcept
 {
-    m_bIsRightPressed = true;
+    m_isRightPressed = true;
 }
 
 void Mouse::OnRightReleased() noexcept
 {
-    m_bIsRightPressed = false;
+    m_isRightPressed = false;
 }
