@@ -27,3 +27,33 @@ void ScreenBuffer::SetPixel(int x, int y, uint32_t color)
     int index = y * m_width + x;
     m_pixels[index] = color;
 }
+
+const uint32_t* ScreenBuffer::GetPixels() const
+{ 
+    return m_pixels.data(); 
+}
+
+int ScreenBuffer::GetWidth() const 
+{ 
+    return m_width; 
+}
+
+int ScreenBuffer::GetHeight() const 
+{ 
+    return m_height; 
+}
+
+void ScreenBuffer::DrawImage(const Image& image, int destX, int destY)
+{
+    for (int y = 0; y < image.GetHeight(); ++y)
+    {
+        for (int x = 0; x < image.GetWidth(); ++x)
+        {
+            uint32_t color = image.GetPixel(x, y);
+
+            color |= 0xFF000000;
+
+            SetPixel(destX + x, destY + y, color);
+        }
+    }
+}

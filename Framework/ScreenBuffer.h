@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <cstdint>
+#include "Image.h"
 
 // brief Represents a CPU-side software frame buffer for pixel manipulation.
 
@@ -18,9 +19,12 @@ public:
     void SetPixel(int x, int y, uint32_t color);
 
     // Inline getters for dimensions and raw pixel data pointer
-    int GetWidth() const { return m_width; }
-    int GetHeight() const { return m_height; }
-    const uint32_t* GetPixels() const { return m_pixels.data(); }
+    const uint32_t* GetPixels() const;
+    int GetWidth() const;
+    int GetHeight() const;
+
+    void DrawImage(const Image& image, int destX, int destY);
+
 
 private:
     int m_width;
