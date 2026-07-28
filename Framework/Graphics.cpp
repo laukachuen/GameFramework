@@ -1,5 +1,6 @@
 #include "Graphics.h"
 #include <iostream>
+#include "Color.h"
 
 // Vertex structure matching the VS_INPUT layout in HLSL
 struct Vertex
@@ -188,7 +189,7 @@ void Graphics::PresentBuffer(const ScreenBuffer& buffer)
     if (SUCCEEDED(hr))
     {
         uint8_t* gpuBuffer = reinterpret_cast<uint8_t*>(mappedResource.pData);
-        const uint32_t* cpuPixels = buffer.GetPixels();
+        const Color* cpuPixels = buffer.GetPixels();
 
         // Safe memcpy accounting for texture row pitch/stride layout
         for (int y = 0; y < buffer.GetHeight(); ++y)
@@ -196,7 +197,7 @@ void Graphics::PresentBuffer(const ScreenBuffer& buffer)
             memcpy(
                 gpuBuffer + (y * mappedResource.RowPitch),
                 cpuPixels + (y * buffer.GetWidth()),
-                buffer.GetWidth() * sizeof(uint32_t)
+                buffer.GetWidth() * sizeof(Color)
             );
         }
         m_context->Unmap(m_dynamicTexture.Get(), 0);

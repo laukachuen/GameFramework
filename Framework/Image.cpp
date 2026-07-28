@@ -89,19 +89,10 @@ bool Image::LoadBMP(const std::string& filepath)
             if (is32Bit)
             {
                 a = file.get();
-                // Defensive fallback: If alpha is 0 (fully transparent), force it to 255 (opaque)
-                if (a == 0)
-                {
-                    a = 255;
-                }
             }
 
             // Combine components into 0xAARRGGBB format and store into vector
-            m_pixels[y * m_width + x] =
-                (static_cast<uint32_t>(a) << 24) |
-                (static_cast<uint32_t>(r) << 16) |
-                (static_cast<uint32_t>(g) << 8) |
-                static_cast<uint32_t>(b);
+            m_pixels[y * m_width + x] = Color(r, g, b, a);
         }
 
         // Skip padding bytes at the end of each row for 24-bit images
@@ -117,7 +108,7 @@ bool Image::LoadBMP(const std::string& filepath)
     return true;
 }
 
-uint32_t Image::GetPixel(int x, int y) const 
+Color Image::GetPixel(int x, int y) const
 { 
     return m_pixels[y * m_width + x]; 
 }

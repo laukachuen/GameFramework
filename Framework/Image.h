@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include "Color.h"
 
 #pragma pack(push, 1)
 struct BMPFileHeader 
@@ -36,12 +37,12 @@ public:
 
     bool LoadBMP(const std::string& filepath);
 
-    uint32_t GetPixel(int x, int y) const;
+    Color GetPixel(int x, int y) const;
     int GetWidth() const;
     int GetHeight() const;
 
 private:
     int m_width = 0;
     int m_height = 0;
-    std::vector<uint32_t> m_pixels;
+    std::vector<Color> m_pixels;
 };

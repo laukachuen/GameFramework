@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstdint>
 #include "Image.h"
+#include "Color.h"
 
 // brief Represents a CPU-side software frame buffer for pixel manipulation.
 
@@ -13,13 +14,13 @@ public:
     ~ScreenBuffer() = default;
 
     // Clears the entire buffer with a specific ARGB color (e.g., 0xAARRGGBB)
-    void Clear(uint32_t color);
+    void Clear(Color color);
 
     // Sets the color of a specific pixel at coordinates (x, y)
-    void SetPixel(int x, int y, uint32_t color);
+    void SetPixel(int x, int y, Color color);
 
     // Inline getters for dimensions and raw pixel data pointer
-    const uint32_t* GetPixels() const;
+    const Color* GetPixels() const;
     int GetWidth() const;
     int GetHeight() const;
 
@@ -29,5 +30,5 @@ public:
 private:
     int m_width;
     int m_height;
-    std::vector<uint32_t> m_pixels; // 1D array representing 2D grid of pixels
+    std::vector<Color> m_pixels; // 1D array representing 2D grid of pixels
 };
