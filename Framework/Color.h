@@ -47,30 +47,23 @@ public:
 		return !(*this == other);
 	}
 
-	static constexpr Color Red()
-	{
-		return Color(255, 0, 0);
-	}
-
-	static constexpr Color Green()
-	{
-		return Color(0, 255, 0);
-	}
-
-	static constexpr Color Blue()
-	{
-		return Color(0, 0, 255);
-	}
-
-	static constexpr Color White()
-	{
-		return Color(255, 255, 255);
-	}
-
-	static constexpr Color Black()
-	{
-		return Color(0, 0, 0);
-	}
+	static constexpr Color Red()       { return Color(255, 0,   0  ); }
+	static constexpr Color Green()     { return Color(0,   255, 0  ); }
+	static constexpr Color Blue()      { return Color(0,   0,   255); }
+	static constexpr Color Yellow()    { return Color(255, 255, 0  ); }
+	static constexpr Color Cyan()      { return Color(0,   255, 255); }
+	static constexpr Color Magenta()   { return Color(255, 0,   255); }
+	static constexpr Color Black()     { return Color(0,   0,   0  ); }
+	static constexpr Color White()     { return Color(255, 255, 255); }
+	static constexpr Color Gray()      { return Color(128, 128, 128); }
+	static constexpr Color Orange()    { return Color(255, 165, 0  ); }
+	static constexpr Color Purple()    { return Color(128, 0,   128); }
+	static constexpr Color Pink()      { return Color(255, 105, 180); }
+	static constexpr Color DarkRed()   { return Color(128, 0,   0  ); }
+	static constexpr Color DarkGreen() { return Color(0,   128, 0  ); }
+	static constexpr Color DarkBlue()  { return Color(0,   0,   128); }
+	static constexpr Color LightGray() { return Color(192, 192, 192); }
+	static constexpr Color LightBlue() { return Color(173, 216, 230); }
 
 	static constexpr Color Transparent()
 	{
