@@ -1,9 +1,12 @@
 #include "App.h"
 
+#include "TitleState.h"
+
 App::App()
     : m_wnd(800, 600, L"My Custom Game Framework", L"../Framework/Shader/BufferShaders.hlsl")
+    , m_gameStateMgr(m_wnd.kbd, m_wnd.Gfx())
 {
-    m_test.LoadBMP("Assets/Test.bmp");
+    m_gameStateMgr.RequestStateChange(std::make_unique<TitleState>(m_gameStateMgr.GetContext()));
 }
 
 int App::Run()
@@ -28,15 +31,14 @@ int App::Run()
 
 void App::Update(float dt)
 {
-    
+    m_gameStateMgr.Update(dt);
 }
 
 void App::Render()
 {
-    m_wnd.Gfx().GetScreenBuffer().Clear(Color::Black());
-    m_wnd.Gfx().GetScreenBuffer().DrawImage(m_test, 100, 100);
-
     m_wnd.Gfx().BeginFrame(0.0f, 0.0f, 0.0f);
+    m_gameStateMgr.Draw();
+
     m_wnd.Gfx().PresentBuffer(); 
     m_wnd.Gfx().EndFrame();                        
 }

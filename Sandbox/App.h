@@ -2,7 +2,7 @@
 #include "Window.h"
 #include "Timer.h"
 #include <memory>
-#include "Image.h"
+#include "GameStateManager.h"
 
 class App
 {
@@ -24,7 +24,6 @@ private:
 
 private:
     Window m_wnd;                                 
-    Timer m_timer;                                
-
-    Image m_test;
+    Timer m_timer;
+    GameStateManager m_gameStateMgr;
 };
