@@ -10,7 +10,7 @@ struct Vertex
 };
 
 Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderPath)
-    : m_shaderPath(shaderPath)
+    : m_shaderPath(shaderPath), m_screenBuffer(std::make_unique<ScreenBuffer>(width, height))
 {
     // =========================================================================
     // 1. Core DX11 Initialization (Device, Context, SwapChain, RTV)
@@ -42,7 +42,7 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderP
         m_swapChain.GetAddressOf(),
         m_device.GetAddressOf(),
         nullptr,
-        m_context.GetAddressOf()
+        m_deviceContext.GetAddressOf()
     );
 
     if (FAILED(hr))
@@ -66,7 +66,7 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderP
     vp.MaxDepth = 1.0f;
     vp.TopLeftX = 0.0f;
     vp.TopLeftY = 0.0f;
-    m_context->RSSetViewports(1, &vp);
+    m_deviceContext->RSSetViewports(1, &vp);
 
     // =========================================================================
     // 2. Initialize Shaders and Full-Screen Quad Pipeline
@@ -181,54 +181,66 @@ bool Graphics::InitializeQuad()
     return SUCCEEDED(hr);
 }
 
-void Graphics::PresentBuffer(const ScreenBuffer& buffer)
+void Graphics::PresentBuffer()
 {
+    const auto& screenBuffer = GetScreenBuffer();
+
     // 1. Map the dynamic GPU texture memory to upload fresh CPU pixel arrays
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT hr = m_context->Map(m_dynamicTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    HRESULT hr = m_deviceContext->Map(m_dynamicTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     if (SUCCEEDED(hr))
     {
         uint8_t* gpuBuffer = reinterpret_cast<uint8_t*>(mappedResource.pData);
-        const Color* cpuPixels = buffer.GetPixels();
+        const Color* cpuPixels = screenBuffer.GetPixels();
 
         // Safe memcpy accounting for texture row pitch/stride layout
-        for (int y = 0; y < buffer.GetHeight(); ++y)
+        for (int y = 0; y < screenBuffer.GetHeight(); ++y)
         {
             memcpy(
                 gpuBuffer + (y * mappedResource.RowPitch),
-                cpuPixels + (y * buffer.GetWidth()),
-                buffer.GetWidth() * sizeof(Color)
+                cpuPixels + (y * screenBuffer.GetWidth()),
+                screenBuffer.GetWidth() * sizeof(Color)
             );
         }
-        m_context->Unmap(m_dynamicTexture.Get(), 0);
+        m_deviceContext->Unmap(m_dynamicTexture.Get(), 0);
     }
 
     // 2. Set up Input Assembler and pipeline stages to render the quad
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    m_context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
-    m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    m_context->IASetInputLayout(m_inputLayout.Get());
+    m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
+    m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    m_deviceContext->IASetInputLayout(m_inputLayout.Get());
 
-    m_context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-    m_context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+    m_deviceContext->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+    m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
     // Bind textures and filters to the Pixel Shader stage
-    m_context->PSSetShaderResources(0, 1, m_textureSRV.GetAddressOf());
-    m_context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+    m_deviceContext->PSSetShaderResources(0, 1, m_textureSRV.GetAddressOf());
+    m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 
     // 3. Draw the quad over the backbuffer
-    m_context->Draw(4, 0);
+    m_deviceContext->Draw(4, 0);
 }
 
 void Graphics::BeginFrame(float r, float g, float b)
 {
     float color[4] = { r, g, b, 1.0f };
-    m_context->ClearRenderTargetView(m_renderTargetView.Get(), color);
-    m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
+    m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), color);
+    m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 }
 
 void Graphics::EndFrame()
 {
     m_swapChain->Present(1, 0); // V-Sync enabled
+}
+
+ScreenBuffer& Graphics::GetScreenBuffer()
+{
+    return *m_screenBuffer;
+}
+
+const ScreenBuffer& Graphics::GetScreenBuffer() const
+{
+    return *m_screenBuffer;
 }

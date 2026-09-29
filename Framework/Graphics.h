@@ -22,8 +22,10 @@ public:
     void BeginFrame(float r, float g, float b);
     void EndFrame();
 
-    // Present the software screen buffer to the GPU texture and render it
-    void PresentBuffer(const ScreenBuffer& buffer);
+    ScreenBuffer& GetScreenBuffer();
+    const ScreenBuffer& GetScreenBuffer() const;
+
+    void PresentBuffer();
 
 private:
     // Helper function to compile and initialize shaders and input layout
@@ -34,11 +36,12 @@ private:
 
 private:
     std::wstring m_shaderPath;
+    std::unique_ptr<ScreenBuffer> m_screenBuffer;
 
 private:
     // Core DirectX 11 Interfaces wrapped in ComPtr
     Microsoft::WRL::ComPtr<ID3D11Device>           m_device;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_context;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_deviceContext;
     Microsoft::WRL::ComPtr<IDXGISwapChain>         m_swapChain;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
 
