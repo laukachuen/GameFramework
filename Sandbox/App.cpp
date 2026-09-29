@@ -3,7 +3,6 @@
 App::App()
     : m_wnd(800, 600, L"My Custom Game Framework", L"../Framework/Shader/BufferShaders.hlsl")
 {
-    m_screenBuffer = std::make_unique<ScreenBuffer>(800, 600);
     m_test.LoadBMP("Assets/Test.bmp");
 }
 
@@ -34,10 +33,10 @@ void App::Update(float dt)
 
 void App::Render()
 {
-    m_screenBuffer->Clear(Color::Black());
-    m_screenBuffer->DrawImage(m_test, 100, 100);
+    m_wnd.Gfx().GetScreenBuffer().Clear(Color::Black());
+    m_wnd.Gfx().GetScreenBuffer().DrawImage(m_test, 100, 100);
 
     m_wnd.Gfx().BeginFrame(0.0f, 0.0f, 0.0f);
-    m_wnd.Gfx().PresentBuffer(*m_screenBuffer); 
+    m_wnd.Gfx().PresentBuffer(); 
     m_wnd.Gfx().EndFrame();                        
 }

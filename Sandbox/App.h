@@ -1,7 +1,6 @@
 #pragma once
 #include "Window.h"
 #include "Timer.h"
-#include "ScreenBuffer.h" 
 #include <memory>
 #include "Image.h"
 
@@ -26,7 +25,6 @@ private:
 private:
     Window m_wnd;                                 
     Timer m_timer;                                
-    std::unique_ptr<ScreenBuffer> m_screenBuffer;
 
     Image m_test;
 };
