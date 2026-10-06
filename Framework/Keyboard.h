@@ -10,8 +10,12 @@ public:
     Keyboard() = default;
     ~Keyboard() = default;
 
+    void Update() noexcept;
+
     // Core API for game logic to check if a specific key is currently held down
-    bool IsKeyPressed(unsigned char keycode) const noexcept;
+    bool IsKeyHeld(unsigned char keycode) const noexcept;
+    bool IsKeyTriggered(unsigned char keycode) const noexcept;
+    bool IsKeyReleased(unsigned char keycode) const noexcept;
 
 private:
     // Functions called internally by Window class when OS messages arrive
@@ -21,5 +25,6 @@ private:
 
 private:
     // A bitset tracking all 256 possible virtual key codes (VK_...)
-    std::bitset<256> m_keystates;
+    std::bitset<256> m_currKeystates;
+    std::bitset<256> m_prevKeystates;
 };

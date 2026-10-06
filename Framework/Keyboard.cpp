@@ -1,21 +1,37 @@
 #include "Keyboard.h"
 
-bool Keyboard::IsKeyPressed(unsigned char keycode) const noexcept
+void Keyboard::Update() noexcept
 {
-    return m_keystates[keycode];
+    m_prevKeystates = m_currKeystates;
+}
+
+bool Keyboard::IsKeyHeld(unsigned char keycode) const noexcept
+{
+    return m_currKeystates[keycode];
+}
+
+bool Keyboard::IsKeyTriggered(unsigned char keycode) const noexcept
+{
+    return m_currKeystates[keycode] && !m_prevKeystates[keycode];
+}
+
+bool Keyboard::IsKeyReleased(unsigned char keycode) const noexcept
+{
+    return !m_currKeystates[keycode] && m_prevKeystates[keycode];
 }
 
 void Keyboard::OnKeyPressed(unsigned char keycode) noexcept
 {
-    m_keystates[keycode] = true;
+    m_currKeystates[keycode] = true;
 }
 
 void Keyboard::OnKeyReleased(unsigned char keycode) noexcept
 {
-    m_keystates[keycode] = false;
+    m_currKeystates[keycode] = false;
 }
 
 void Keyboard::ClearState() noexcept
 {
-    m_keystates.reset();
+    m_currKeystates.reset();
+    m_prevKeystates.reset();
 }
