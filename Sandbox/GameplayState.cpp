@@ -16,7 +16,7 @@ GameplayState::~GameplayState() = default;
 
 void GameplayState::Initialize()
 {
-    m_test.LoadBMP("Assets/Test.bmp");
+    m_test.LoadBMP("Assets/Sprites/Test.bmp");
 }
 
 void GameplayState::Update(float dt)
