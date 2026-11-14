@@ -38,6 +38,12 @@ private:
     std::wstring m_shaderPath;
     std::unique_ptr<ScreenBuffer> m_screenBuffer;
 
+    struct BufferVertex
+    {
+        float x, y, z, w; // Position in clip space
+        float u, v;       // Texture coordinates (UV)
+    };
+
 private:
     // Core DirectX 11 Interfaces wrapped in ComPtr
     Microsoft::WRL::ComPtr<ID3D11Device>           m_device;

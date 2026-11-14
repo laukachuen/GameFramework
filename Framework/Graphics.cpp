@@ -2,13 +2,6 @@
 #include <iostream>
 #include "Color.h"
 
-// Vertex structure matching the VS_INPUT layout in HLSL
-struct Vertex
-{
-    float x, y, z, w; // Position in clip space
-    float u, v;       // Texture coordinates (UV)
-};
-
 Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderPath)
     : m_shaderPath(shaderPath), m_screenBuffer(std::make_unique<ScreenBuffer>(width, height))
 {
@@ -160,7 +153,7 @@ bool Graphics::InitializeShaders()
 bool Graphics::InitializeQuad()
 {
     // Quad coordinates spanning across entire Normalized Device Coordinates (NDC: -1 to 1)
-    Vertex vertices[] =
+    BufferVertex vertices[] =
     {
         // Position (X, Y, Z, W)           // UV Coordinates (U, V)
         { -1.0f,  1.0f, 0.0f, 1.0f,        0.0f, 0.0f }, // Top-Left
@@ -206,7 +199,7 @@ void Graphics::PresentBuffer()
     }
 
     // 2. Set up Input Assembler and pipeline stages to render the quad
-    UINT stride = sizeof(Vertex);
+    UINT stride = sizeof(BufferVertex);
     UINT offset = 0;
     m_deviceContext->IASetVertexBuffers(0, 1, m_bufferVertexBuffer.GetAddressOf(), &stride, &offset);
     m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
