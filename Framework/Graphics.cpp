@@ -142,8 +142,8 @@ bool Graphics::InitializeShaders()
     }
 
     // Create shader objects using ComPtr
-    m_device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
-    m_device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf());
+    m_device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, m_bufferVertexShader.GetAddressOf());
+    m_device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, m_bufferPixelShader.GetAddressOf());
 
     // Define input layout required for the fullscreen quad geometry
     D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -152,7 +152,7 @@ bool Graphics::InitializeShaders()
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
 
-    m_device->CreateInputLayout(layout, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), m_inputLayout.GetAddressOf());
+    m_device->CreateInputLayout(layout, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), m_bufferInputLayout.GetAddressOf());
 
     return true;
 }
@@ -177,7 +177,7 @@ bool Graphics::InitializeQuad()
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = vertices;
 
-    HRESULT hr = m_device->CreateBuffer(&bd, &initData, m_vertexBuffer.GetAddressOf());
+    HRESULT hr = m_device->CreateBuffer(&bd, &initData, m_bufferVertexBuffer.GetAddressOf());
     return SUCCEEDED(hr);
 }
 
@@ -208,12 +208,12 @@ void Graphics::PresentBuffer()
     // 2. Set up Input Assembler and pipeline stages to render the quad
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
+    m_deviceContext->IASetVertexBuffers(0, 1, m_bufferVertexBuffer.GetAddressOf(), &stride, &offset);
     m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    m_deviceContext->IASetInputLayout(m_inputLayout.Get());
+    m_deviceContext->IASetInputLayout(m_bufferInputLayout.Get());
 
-    m_deviceContext->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-    m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+    m_deviceContext->VSSetShader(m_bufferVertexShader.Get(), nullptr, 0);
+    m_deviceContext->PSSetShader(m_bufferPixelShader.Get(), nullptr, 0);
 
     // Bind textures and filters to the Pixel Shader stage
     m_deviceContext->PSSetShaderResources(0, 1, m_textureSRV.GetAddressOf());

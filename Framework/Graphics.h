@@ -46,10 +46,10 @@ private:
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
 
     // Software Rendering Pipeline Resources wrapped in ComPtr
-    Microsoft::WRL::ComPtr<ID3D11VertexShader>     m_vertexShader;
-    Microsoft::WRL::ComPtr<ID3D11PixelShader>      m_pixelShader;
-    Microsoft::WRL::ComPtr<ID3D11InputLayout>      m_inputLayout;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>           m_vertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11VertexShader>     m_bufferVertexShader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>      m_bufferPixelShader;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>      m_bufferInputLayout;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>           m_bufferVertexBuffer;
 
     // Texture resources to hold the CPU pixel data
     Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_dynamicTexture;
