@@ -34,6 +34,9 @@ private:
     // Helper function to create the full-screen quad vertex buffer
     bool InitializeQuad();
 
+    // GPU Hardware Rendering
+    bool InitializeTriangle();
+
 private:
     std::wstring m_shaderPath;
     std::unique_ptr<ScreenBuffer> m_screenBuffer;
@@ -42,6 +45,12 @@ private:
     {
         float x, y, z, w; // Position in clip space
         float u, v;       // Texture coordinates (UV)
+    };
+
+    struct Vertex
+    {
+        float x, y, z;
+        float r, g, b;
     };
 
 private:
@@ -56,6 +65,9 @@ private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader>      m_bufferPixelShader;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>      m_bufferInputLayout;
     Microsoft::WRL::ComPtr<ID3D11Buffer>           m_bufferVertexBuffer;
+
+    // GPU Hardware Rendering
+    Microsoft::WRL::ComPtr<ID3D11Buffer>           m_vertexBuffer;
 
     // Texture resources to hold the CPU pixel data
     Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_dynamicTexture;

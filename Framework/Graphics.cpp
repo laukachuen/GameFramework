@@ -74,6 +74,11 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderP
         MessageBox(hWnd, L"Failed to initialize fullscreen quad vertex buffer.", L"Error", MB_OK);
     }
 
+    if (!InitializeTriangle())
+    {
+        MessageBox(hWnd, L"Failed to initialize triangle vertex buffer.", L"Error", MB_OK);
+    }
+
     // =========================================================================
     // 3. Create Dynamic Texture for CPU Screen Buffer
     // =========================================================================
@@ -171,6 +176,28 @@ bool Graphics::InitializeQuad()
     initData.pSysMem = vertices;
 
     HRESULT hr = m_device->CreateBuffer(&bd, &initData, m_bufferVertexBuffer.GetAddressOf());
+    return SUCCEEDED(hr);
+}
+
+bool Graphics::InitializeTriangle()
+{
+    const Vertex vertices[] =
+    {
+        // Position (x, y, z)     Color (r, g, b)
+        {  0.0f,  0.5f, 0.0f,     1.0f, 0.0f, 0.0f },
+        {  0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f },
+        { -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 1.0f }
+    };
+
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(vertices);
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = vertices;
+
+    HRESULT hr = m_device->CreateBuffer(&bd, &initData, m_vertexBuffer.GetAddressOf());
     return SUCCEEDED(hr);
 }
 
