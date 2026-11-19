@@ -308,6 +308,24 @@ void Graphics::PresentBuffer()
     m_deviceContext->Draw(4, 0);
 }
 
+void Graphics::DrawTriangle()
+{
+    // Set up Input Assembler
+    UINT stride = sizeof(Vertex);
+    UINT offset = 0;
+
+    m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
+    m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_deviceContext->IASetInputLayout(m_inputLayout.Get());
+
+    // Bind shaders
+    m_deviceContext->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+    m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+
+    // Draw the triangle
+    m_deviceContext->Draw(3, 0);
+}
+
 void Graphics::BeginFrame(float r, float g, float b)
 {
     float color[4] = { r, g, b, 1.0f };

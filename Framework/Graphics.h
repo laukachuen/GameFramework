@@ -26,6 +26,7 @@ public:
     const ScreenBuffer& GetScreenBuffer() const;
 
     void PresentBuffer();
+    void DrawTriangle();
 
 private:
     // Helper function to compile and initialize shaders and input layout
