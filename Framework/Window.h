@@ -11,7 +11,7 @@
 class Window
 {
 public:
-    Window(int width, int height, const std::wstring& title, const std::wstring& shaderPath);
+    Window(int width, int height, const std::wstring& title, const std::wstring& shaderDirectory);
     ~Window();
 
     // Prevent copying of the window instance to avoid multiple window bugs

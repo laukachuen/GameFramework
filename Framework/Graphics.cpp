@@ -2,8 +2,8 @@
 #include <iostream>
 #include "Color.h"
 
-Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderPath)
-    : m_shaderPath(shaderPath), m_screenBuffer(std::make_unique<ScreenBuffer>(width, height))
+Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderDirectory)
+    : m_shaderDirectory(shaderDirectory), m_screenBuffer(std::make_unique<ScreenBuffer>(width, height))
 {
     // =========================================================================
     // 1. Core DX11 Initialization (Device, Context, SwapChain, RTV)
@@ -115,13 +115,15 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderP
 
 bool Graphics::InitializeShaders()
 {
+    const std::wstring shaderPath = m_shaderDirectory + L"BufferShaders.hlsl";
+
     Microsoft::WRL::ComPtr<ID3DBlob> vsBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> psBlob;
     Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
 
     // Compile Vertex Shader from file at runtime
     HRESULT hr = D3DCompileFromFile(
-        m_shaderPath.c_str(), nullptr, nullptr,
+        shaderPath.c_str(), nullptr, nullptr,
         "VS_Main", "vs_5_0", 0, 0, vsBlob.GetAddressOf(), errorBlob.GetAddressOf()
     );
     if (FAILED(hr))
@@ -131,7 +133,7 @@ bool Graphics::InitializeShaders()
 
     // Compile Pixel Shader from file at runtime
     hr = D3DCompileFromFile(
-        m_shaderPath.c_str(), nullptr, nullptr,
+        shaderPath.c_str(), nullptr, nullptr,
         "PS_Main", "ps_5_0", 0, 0, psBlob.GetAddressOf(), errorBlob.GetAddressOf()
     );
     if (FAILED(hr))

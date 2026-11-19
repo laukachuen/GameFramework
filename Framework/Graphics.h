@@ -12,7 +12,7 @@
 class Graphics
 {
 public:
-    Graphics(HWND hWnd, int width, int height, const std::wstring& shaderPath); // Pass the shader file path during initialization
+    Graphics(HWND hWnd, int width, int height, const std::wstring& shaderDirectory); // Pass the shader file path during initialization
     ~Graphics() = default; // ComPtr automatically handles resource cleanup (RAII)
 
     // Disallow copying to prevent resource duplication issues
@@ -38,7 +38,7 @@ private:
     bool InitializeTriangle();
 
 private:
-    std::wstring m_shaderPath;
+    std::wstring m_shaderDirectory;
     std::unique_ptr<ScreenBuffer> m_screenBuffer;
 
     struct BufferVertex
