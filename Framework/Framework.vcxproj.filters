@@ -88,5 +88,8 @@
     <FxCompile Include="Shader\BufferShaders.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="Shader\TriangleShaders.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

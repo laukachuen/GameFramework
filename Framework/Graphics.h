@@ -35,6 +35,7 @@ private:
     bool InitializeQuad();
 
     // GPU Hardware Rendering
+    bool InitializeHardwareShaders();
     bool InitializeTriangle();
 
 private:
@@ -67,6 +68,9 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Buffer>           m_bufferVertexBuffer;
 
     // GPU Hardware Rendering
+    Microsoft::WRL::ComPtr<ID3D11VertexShader>     m_vertexShader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>      m_pixelShader;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>      m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11Buffer>           m_vertexBuffer;
 
     // Texture resources to hold the CPU pixel data

@@ -74,6 +74,12 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderD
         MessageBox(hWnd, L"Failed to initialize fullscreen quad vertex buffer.", L"Error", MB_OK);
     }
 
+    // GPU
+    if (!InitializeHardwareShaders())
+    {
+        MessageBox(hWnd, L"Failed to initialize hardware shaders.", L"Error", MB_OK);
+    }
+
     if (!InitializeTriangle())
     {
         MessageBox(hWnd, L"Failed to initialize triangle vertex buffer.", L"Error", MB_OK);
@@ -178,6 +184,63 @@ bool Graphics::InitializeQuad()
     initData.pSysMem = vertices;
 
     HRESULT hr = m_device->CreateBuffer(&bd, &initData, m_bufferVertexBuffer.GetAddressOf());
+    return SUCCEEDED(hr);
+}
+
+// GPU Hardware Rendering
+bool Graphics::InitializeHardwareShaders()
+{
+    const std::wstring shaderPath = m_shaderDirectory + L"TriangleShaders.hlsl";
+
+    Microsoft::WRL::ComPtr<ID3DBlob> vsBlob;
+    Microsoft::WRL::ComPtr<ID3DBlob> psBlob;
+    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
+
+    // Compile Vertex Shader
+    HRESULT hr = D3DCompileFromFile(
+        shaderPath.c_str(), nullptr, nullptr,
+        "VS_Main", "vs_5_0", 0, 0, vsBlob.GetAddressOf(), errorBlob.GetAddressOf()
+    );
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    // Compile Pixel Shader
+    hr = D3DCompileFromFile(
+        shaderPath.c_str(), nullptr, nullptr,
+        "PS_Main", "ps_5_0", 0, 0, psBlob.GetAddressOf(), errorBlob.ReleaseAndGetAddressOf()
+    );
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    // Create Vertex Shader
+    hr = m_device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
+
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    // Create Pixel Shader
+    hr = m_device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf());
+
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    // Define input layout for hardware rendering
+    D3D11_INPUT_ELEMENT_DESC layout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+
+    hr = m_device->CreateInputLayout(layout, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), m_inputLayout.GetAddressOf());
+
     return SUCCEEDED(hr);
 }
 
