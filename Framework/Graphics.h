@@ -27,7 +27,7 @@ public:
     const ScreenBuffer& GetScreenBuffer() const;
 
     void PresentBuffer();
-    void DrawTriangle();
+    void DrawGeometry();
 
 private:
     // Helper function to compile and initialize shaders and input layout
@@ -38,7 +38,7 @@ private:
 
     // GPU Hardware Rendering
     bool InitializeHardwareShaders();
-    bool InitializeTriangle();
+    bool InitializeGeometry();
     bool InitializeConstantBuffer();
 
 private:
@@ -81,6 +81,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11InputLayout>      m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11Buffer>           m_vertexBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer>           m_constantBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>           m_indexBuffer;
 
     // Texture resources to hold the CPU pixel data
     Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_dynamicTexture;

@@ -80,9 +80,9 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderD
         MessageBox(hWnd, L"Failed to initialize hardware shaders.", L"Error", MB_OK);
     }
 
-    if (!InitializeTriangle())
+    if (!InitializeGeometry())
     {
-        MessageBox(hWnd, L"Failed to initialize triangle vertex buffer.", L"Error", MB_OK);
+        MessageBox(hWnd, L"Failed to initialize geometry buffers.", L"Error", MB_OK);
     }
 
     if (!InitializeConstantBuffer())
@@ -249,14 +249,21 @@ bool Graphics::InitializeHardwareShaders()
     return SUCCEEDED(hr);
 }
 
-bool Graphics::InitializeTriangle()
+bool Graphics::InitializeGeometry()
 {
     const Vertex vertices[] =
     {
         // Position (x, y, z)     Color (r, g, b)
-        {  0.0f,  0.5f, 0.0f,     1.0f, 0.0f, 0.0f },
-        {  0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f },
-        { -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 1.0f }
+        { -0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f },
+        {  0.5f,  0.5f, 0.0f,    0.0f, 1.0f, 0.0f },
+        { -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f },
+        {  0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 0.0f }
+    };
+
+    const unsigned short indices[] =
+    {
+        0,1,2,
+        1,3,2
     };
 
     D3D11_BUFFER_DESC bd = {};
@@ -268,6 +275,21 @@ bool Graphics::InitializeTriangle()
     initData.pSysMem = vertices;
 
     HRESULT hr = m_device->CreateBuffer(&bd, &initData, m_vertexBuffer.GetAddressOf());
+
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    D3D11_BUFFER_DESC ibd = {};
+    ibd.Usage = D3D11_USAGE_DEFAULT;
+    ibd.ByteWidth = sizeof(indices);
+    ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+    D3D11_SUBRESOURCE_DATA indexData = {};
+    indexData.pSysMem = indices;
+
+    hr = m_device->CreateBuffer(&ibd, &indexData, m_indexBuffer.GetAddressOf());
     return SUCCEEDED(hr);
 }
 
@@ -325,13 +347,15 @@ void Graphics::PresentBuffer()
     m_deviceContext->Draw(4, 0);
 }
 
-void Graphics::DrawTriangle()
+void Graphics::DrawGeometry()
 {
     ConstantBuffer cb = {};
-    DirectX::XMMATRIX transform =
+   /* DirectX::XMMATRIX transform =
         DirectX::XMMatrixScaling(0.5f, 0.5f, 1.0f) *
         DirectX::XMMatrixRotationZ(DirectX::XM_PIDIV4) *
-        DirectX::XMMatrixTranslation(0.3f, 0.0f, 0.0f);
+        DirectX::XMMatrixTranslation(0.3f, 0.0f, 0.0f);*/
+
+    DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
 
     DirectX::XMStoreFloat4x4(&cb.transform, transform);
 
@@ -352,6 +376,7 @@ void Graphics::DrawTriangle()
     UINT offset = 0;
 
     m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
+    m_deviceContext->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
     m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_deviceContext->IASetInputLayout(m_inputLayout.Get());
 
@@ -361,7 +386,7 @@ void Graphics::DrawTriangle()
     m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
     // Draw the triangle
-    m_deviceContext->Draw(3, 0);
+    m_deviceContext->DrawIndexed(6, 0, 0);
 }
 
 void Graphics::BeginFrame(float r, float g, float b)

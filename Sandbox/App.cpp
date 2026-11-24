@@ -41,6 +41,6 @@ void App::Render()
     m_gameStateMgr.Draw();
 
     m_wnd.Gfx().PresentBuffer(); 
-    m_wnd.Gfx().DrawTriangle();
+    m_wnd.Gfx().DrawGeometry();
     m_wnd.Gfx().EndFrame();                        
 }
