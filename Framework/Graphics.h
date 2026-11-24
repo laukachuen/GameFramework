@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include <wrl/client.h>
 #include <memory>
@@ -58,9 +59,7 @@ private:
 
     struct ConstantBuffer
     {
-        float offsetX;
-        float offsetY;
-        float padding[2];
+        DirectX::XMFLOAT4X4 transform;
     };
 
 private:

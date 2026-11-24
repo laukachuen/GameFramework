@@ -328,8 +328,12 @@ void Graphics::PresentBuffer()
 void Graphics::DrawTriangle()
 {
     ConstantBuffer cb = {};
-    cb.offsetX = 0.3f;
-    cb.offsetY = 0.0f;
+    DirectX::XMMATRIX transform =
+        DirectX::XMMatrixScaling(0.5f, 0.5f, 1.0f) *
+        DirectX::XMMatrixRotationZ(DirectX::XM_PIDIV4) *
+        DirectX::XMMatrixTranslation(0.3f, 0.0f, 0.0f);
+
+    DirectX::XMStoreFloat4x4(&cb.transform, transform);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource = {};
     HRESULT hr = m_deviceContext->Map(m_constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

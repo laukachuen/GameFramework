@@ -1,8 +1,6 @@
 cbuffer ConstantBuffer : register(b0)
 {
-    float offsetX;
-    float offsetY;
-    float2 padding;
+    row_major float4x4 transform;
 };
 
 struct VSInput
@@ -21,13 +19,7 @@ VSOutput VS_Main(VSInput input)
 {
     VSOutput output;
     
-    output.position = float4(
-    input.position.x + offsetX, 
-    input.position.y + offsetY, 
-    input.position.z, 
-    1.0f
-    );
-    
+    output.position = mul(float4(input.position, 1.0f), transform);    
     output.color = input.color;
 
     return output;
