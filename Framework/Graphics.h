@@ -38,6 +38,7 @@ private:
     // GPU Hardware Rendering
     bool InitializeHardwareShaders();
     bool InitializeTriangle();
+    bool InitializeConstantBuffer();
 
 private:
     std::wstring m_shaderDirectory;
@@ -53,6 +54,13 @@ private:
     {
         float x, y, z;
         float r, g, b;
+    };
+
+    struct ConstantBuffer
+    {
+        float offsetX;
+        float offsetY;
+        float padding[2];
     };
 
 private:
@@ -73,6 +81,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader>      m_pixelShader;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>      m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11Buffer>           m_vertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>           m_constantBuffer;
 
     // Texture resources to hold the CPU pixel data
     Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_dynamicTexture;

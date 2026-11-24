@@ -85,6 +85,11 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderD
         MessageBox(hWnd, L"Failed to initialize triangle vertex buffer.", L"Error", MB_OK);
     }
 
+    if (!InitializeConstantBuffer())
+    {
+        MessageBox(hWnd, L"Failed to initialize constant buffer.", L"Error", MB_OK);
+    }
+
     // =========================================================================
     // 3. Create Dynamic Texture for CPU Screen Buffer
     // =========================================================================
@@ -266,6 +271,18 @@ bool Graphics::InitializeTriangle()
     return SUCCEEDED(hr);
 }
 
+bool Graphics::InitializeConstantBuffer()
+{
+    D3D11_BUFFER_DESC bd = {};
+    bd.Usage = D3D11_USAGE_DYNAMIC;
+    bd.ByteWidth = sizeof(ConstantBuffer);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    HRESULT hr = m_device->CreateBuffer(&bd, nullptr, m_constantBuffer.GetAddressOf());
+    return SUCCEEDED(hr);
+}
+
 void Graphics::PresentBuffer()
 {
     const auto& screenBuffer = GetScreenBuffer();
@@ -310,6 +327,22 @@ void Graphics::PresentBuffer()
 
 void Graphics::DrawTriangle()
 {
+    ConstantBuffer cb = {};
+    cb.offsetX = 0.3f;
+    cb.offsetY = 0.0f;
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+    HRESULT hr = m_deviceContext->Map(m_constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+    if (FAILED(hr))
+    {
+        return;
+    }
+
+    memcpy(mappedResource.pData, &cb, sizeof(cb));
+
+    m_deviceContext->Unmap(m_constantBuffer.Get(), 0);
+
     // Set up Input Assembler
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
@@ -320,6 +353,7 @@ void Graphics::DrawTriangle()
 
     // Bind shaders
     m_deviceContext->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+    m_deviceContext->VSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
     m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
     // Draw the triangle

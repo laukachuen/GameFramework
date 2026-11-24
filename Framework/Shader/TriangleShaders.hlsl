@@ -1,3 +1,10 @@
+cbuffer ConstantBuffer : register(b0)
+{
+    float offsetX;
+    float offsetY;
+    float2 padding;
+};
+
 struct VSInput
 {
     float3 position : POSITION;
@@ -13,7 +20,14 @@ struct VSOutput
 VSOutput VS_Main(VSInput input)
 {
     VSOutput output;
-    output.position = float4(input.position, 1.0f);
+    
+    output.position = float4(
+    input.position.x + offsetX, 
+    input.position.y + offsetY, 
+    input.position.z, 
+    1.0f
+    );
+    
     output.color = input.color;
 
     return output;
