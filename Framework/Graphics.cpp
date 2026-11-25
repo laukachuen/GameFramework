@@ -253,17 +253,44 @@ bool Graphics::InitializeGeometry()
 {
     const Vertex vertices[] =
     {
-        // Position (x, y, z)     Color (r, g, b)
-        { -0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f },
-        {  0.5f,  0.5f, 0.0f,    0.0f, 1.0f, 0.0f },
-        { -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f },
-        {  0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 0.0f }
+        // Front face (Z = -0.5)
+        { -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f }, // 0
+        {  0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f }, // 1
+        { -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f }, // 2
+        {  0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f }, // 3
+
+        // Back face (Z = +0.5)
+        { -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f }, // 4
+        {  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f }, // 5
+        { -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f }, // 6
+        {  0.5f, -0.5f,  0.5f,  0.5f, 0.5f, 0.5f }  // 7
     };
 
     const unsigned short indices[] =
     {
-        0,1,2,
-        1,3,2
+        // Front face
+        0, 1, 2,
+        1, 3, 2,
+
+        // Back face
+        5, 4, 7,
+        4, 6, 7,
+
+        // Left face
+        4, 0, 6,
+        0, 2, 6,
+
+        // Right face
+        1, 5, 3,
+        5, 7, 3,
+
+        // Top face
+        4, 5, 0,
+        5, 1, 0,
+
+        // Bottom face
+        2, 3, 6,
+        3, 7, 6
     };
 
     D3D11_BUFFER_DESC bd = {};
@@ -350,12 +377,11 @@ void Graphics::PresentBuffer()
 void Graphics::DrawGeometry()
 {
     ConstantBuffer cb = {};
-   /* DirectX::XMMATRIX transform =
-        DirectX::XMMatrixScaling(0.5f, 0.5f, 1.0f) *
-        DirectX::XMMatrixRotationZ(DirectX::XM_PIDIV4) *
-        DirectX::XMMatrixTranslation(0.3f, 0.0f, 0.0f);*/
-
-    DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
+    DirectX::XMMATRIX transform =
+        DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f) *
+        DirectX::XMMatrixRotationX(DirectX::XM_PIDIV4) *
+        DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4) *
+        DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.5f);
 
     DirectX::XMStoreFloat4x4(&cb.transform, transform);
 
@@ -386,7 +412,7 @@ void Graphics::DrawGeometry()
     m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
     // Draw the triangle
-    m_deviceContext->DrawIndexed(6, 0, 0);
+    m_deviceContext->DrawIndexed(36, 0, 0);
 }
 
 void Graphics::BeginFrame(float r, float g, float b)
