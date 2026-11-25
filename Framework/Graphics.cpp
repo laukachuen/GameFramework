@@ -377,11 +377,36 @@ void Graphics::PresentBuffer()
 void Graphics::DrawGeometry()
 {
     ConstantBuffer cb = {};
-    DirectX::XMMATRIX transform =
+    DirectX::XMMATRIX world =
         DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f) *
         DirectX::XMMatrixRotationX(DirectX::XM_PIDIV4) *
-        DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4) *
-        DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.5f);
+        DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4);
+
+    DirectX::XMVECTOR eyePosition =
+        DirectX::XMVectorSet(0.0f, 0.0f, -3.0f, 1.0f);
+
+    DirectX::XMVECTOR focusPosition =
+        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+
+    DirectX::XMVECTOR upDirection =
+        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+    DirectX::XMMATRIX view =
+        DirectX::XMMatrixLookAtLH(
+            eyePosition,
+            focusPosition,
+            upDirection
+        );
+
+    DirectX::XMMATRIX projection =
+        DirectX::XMMatrixPerspectiveFovLH(
+            DirectX::XMConvertToRadians(60.0f),
+            800.0f / 600.0f,
+            0.1f,
+            100.0f
+        );
+
+    DirectX::XMMATRIX transform = world * view * projection;
 
     DirectX::XMStoreFloat4x4(&cb.transform, transform);
 
