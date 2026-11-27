@@ -41,6 +41,12 @@ void App::Render()
     m_gameStateMgr.Draw();
 
     m_wnd.Gfx().PresentBuffer(); 
-    m_wnd.Gfx().DrawGeometry();
+
+    // Near cube
+    m_wnd.Gfx().DrawGeometry(-0.15f, 0.0f, 0.0f);
+
+    // Far cube
+    m_wnd.Gfx().DrawGeometry(0.15f, 0.0f, 1.0f);
+
     m_wnd.Gfx().EndFrame();                        
 }

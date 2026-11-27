@@ -51,6 +51,13 @@ Graphics::Graphics(HWND hWnd, int width, int height, const std::wstring& shaderD
     // Create Render Target View
     m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, m_renderTargetView.GetAddressOf());
 
+    // Depth Stencil
+    if (!InitializeDepthStencil(width, height))
+    {
+        MessageBox(hWnd, L"Failed to initialize depth stencil.", L"Error", MB_OK);
+        return;
+    }
+
     // Set up the Viewport
     D3D11_VIEWPORT vp = {};
     vp.Width = static_cast<float>(width);
@@ -332,8 +339,48 @@ bool Graphics::InitializeConstantBuffer()
     return SUCCEEDED(hr);
 }
 
+bool Graphics::InitializeDepthStencil(int width, int height)
+{
+    D3D11_TEXTURE2D_DESC depthDesc = {};
+    depthDesc.Width = width;
+    depthDesc.Height = height;
+    depthDesc.MipLevels = 1;
+    depthDesc.ArraySize = 1;
+    depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthDesc.SampleDesc.Count = 1;
+    depthDesc.SampleDesc.Quality = 0;
+    depthDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    HRESULT hr = m_device->CreateTexture2D(&depthDesc, nullptr, m_depthStencilBuffer.GetAddressOf());
+
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    hr = m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), nullptr, m_depthStencilView.GetAddressOf());
+
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;
+    dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    dsDesc.StencilEnable = FALSE;
+
+    hr = m_device->CreateDepthStencilState(&dsDesc, m_depthStencilState.GetAddressOf());
+
+    return SUCCEEDED(hr);
+}
+
 void Graphics::PresentBuffer()
 {
+    m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
+
     const auto& screenBuffer = GetScreenBuffer();
 
     // 1. Map the dynamic GPU texture memory to upload fresh CPU pixel arrays
@@ -374,13 +421,17 @@ void Graphics::PresentBuffer()
     m_deviceContext->Draw(4, 0);
 }
 
-void Graphics::DrawGeometry()
+void Graphics::DrawGeometry(float x, float y, float z)
 {
+    m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
+    m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+
     ConstantBuffer cb = {};
     DirectX::XMMATRIX world =
         DirectX::XMMatrixScaling(0.5f, 0.5f, 0.5f) *
         DirectX::XMMatrixRotationX(DirectX::XM_PIDIV4) *
-        DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4);
+        DirectX::XMMatrixRotationY(DirectX::XM_PIDIV4) *
+        DirectX::XMMatrixTranslation(x, y, z);
 
     DirectX::XMVECTOR eyePosition =
         DirectX::XMVectorSet(0.0f, 0.0f, -3.0f, 1.0f);
@@ -444,6 +495,8 @@ void Graphics::BeginFrame(float r, float g, float b)
 {
     float color[4] = { r, g, b, 1.0f };
     m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), color);
+    // Clear depth stencil buffer
+    m_deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 }
 

@@ -27,7 +27,7 @@ public:
     const ScreenBuffer& GetScreenBuffer() const;
 
     void PresentBuffer();
-    void DrawGeometry();
+    void DrawGeometry(float x, float y, float z);
 
 private:
     // Helper function to compile and initialize shaders and input layout
@@ -40,6 +40,8 @@ private:
     bool InitializeHardwareShaders();
     bool InitializeGeometry();
     bool InitializeConstantBuffer();
+
+    bool InitializeDepthStencil(int width, int height);
 
 private:
     std::wstring m_shaderDirectory;
@@ -64,10 +66,13 @@ private:
 
 private:
     // Core DirectX 11 Interfaces wrapped in ComPtr
-    Microsoft::WRL::ComPtr<ID3D11Device>           m_device;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_deviceContext;
-    Microsoft::WRL::ComPtr<IDXGISwapChain>         m_swapChain;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetView;
+    Microsoft::WRL::ComPtr<ID3D11Device>            m_device;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext>     m_deviceContext;
+    Microsoft::WRL::ComPtr<IDXGISwapChain>          m_swapChain;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_renderTargetView;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>         m_depthStencilBuffer;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_depthStencilView;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 
     // Software Rendering Pipeline Resources wrapped in ComPtr
     Microsoft::WRL::ComPtr<ID3D11VertexShader>     m_bufferVertexShader;
